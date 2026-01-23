@@ -59,6 +59,9 @@ class BasePage:
     # ======================
     # Getting information
     # ======================
+    def get_title(self) -> str:
+        return self.page.title()
+    
     def get_text(self, locator: str | Locator) -> str:
         if isinstance(locator, str):
             locator = self.page.locator(locator)
