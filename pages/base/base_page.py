@@ -1,5 +1,3 @@
-from socket import timeout
-from conftest import base_url
 from playwright.sync_api import Page, Locator, expect
 from typing import Optional
 
