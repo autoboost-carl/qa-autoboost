@@ -2,14 +2,21 @@ import pytest
 from playwright.sync_api import Page, BrowserContext
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 #=====================
 # Page configuration
 #=====================
 @pytest.fixture
 def page(context: BrowserContext) -> Page:
+    # Create a new page for each test
     page = context.new_page()
+    # Deliver the page to the test
     yield page
+    # Close the page after the test
     page.close()
 
 #=====================

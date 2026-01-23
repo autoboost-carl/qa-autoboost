@@ -3,9 +3,9 @@ from playwright.sync_api import Page, expect
 
 @pytest.mark.smoke
 @pytest.mark.p0
-def test_home_page_loads(page: Page):
+def test_home_page_loads(page: Page, base_url: str):
     # Navigate to the home page
-    page.goto("https://automationteststore.com/")
+    page.goto(base_url)
     # Verify that the home page title is correct
     expect(page).to_have_title("A place to practice your automation skills!")
     # Verify logo is visible
@@ -16,9 +16,9 @@ def test_home_page_loads(page: Page):
 
 @pytest.mark.smoke
 @pytest.mark.p0
-def test_main_navigation_visible(page: Page):
+def test_main_navigation_visible(page: Page, base_url: str):
     # Navigate to the home page
-    page.goto("https://automationteststore.com/")
+    page.goto(base_url)
 
     main_menu = page.locator("nav.subnav")
     expect(main_menu).to_be_visible()
@@ -36,5 +36,11 @@ def test_main_navigation_visible(page: Page):
         text = link.text_content()
         print(f" {i + 1}. [{text.strip()}]")
 
+#@pytest.mark.smoke
+#def test_screenshot_on_failure(page: Page, base_url: str):
+#    # Navigate to the home page
+#    page.goto(base_url)
+#    # Intentionally fail the test to trigger screenshot capture
+#    expect(page).to_have_title("This title is incorrect to trigger failure")
    
     
