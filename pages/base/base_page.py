@@ -129,7 +129,7 @@ class BasePage:
 
         expect(locator).to_have_text(expected_text)
     
-    def assert_text_contains(self, locator: str | Locator, expected_substring: s) -> None:
+    def assert_text_contains(self, locator: str | Locator, expected_substring: str) -> None:
         if isinstance(locator, str):
             locator = self.page.locator(locator)
 
