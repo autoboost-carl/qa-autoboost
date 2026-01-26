@@ -13,19 +13,19 @@ class LoginPage(BasePage):
 
     @property
     def login_name_input(self):
-        return self.page.get_by_role("input", name="loginname")
+        return self.page.locator("input[name='loginname']")
     
     @property
     def password_input(self):
-        return self.page.get_by_role("input", name="password")
+        return self.page.locator("input[name='password']")
     
     @property
     def login_button(self):
-        return self.page.get_by_role("button", title="Login")
+        return self.page.locator("button:has-text('Login')")
     
     @property
     def forgot_password_link(self):
-        return self.page.get_by_role("link", name="Forgot your password?")
+        return self.page.locator("a:has-text('Forgot your password')")
     
     @property
     def error_message(self):
@@ -80,13 +80,13 @@ class LoginPage(BasePage):
     # ==========================================
     # Login with valid credentials
     def assert_login_successful(self, expected_login_text: str = None) -> None:
-        self.is_success_message_displayed()
+        self.assert_element_visible(self.success_message)
         if expected_login_text:
             self.assert_text_contains(self.success_message, expected_login_text)
 
     # Login with invalid credentials
     def assert_error_displayed(self, expected_error_message: str = None) -> None:
-        self.is_error_displayed()
+        self.assert_element_visible(self.error_message)
         if expected_error_message:
             self.assert_text_contains(self.error_message, expected_error_message)
     

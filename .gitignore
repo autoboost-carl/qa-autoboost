@@ -23,4 +23,5 @@ wheels/
 venv/
 ENV/
 .vscode/
-.DS_Store
+.DS_Storescreenshots/
+.env
