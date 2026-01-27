@@ -73,11 +73,8 @@ class LoginPage(BasePage):
     
     def logout(self) -> None:
         """Logout from the account by navigating to logout URL."""
-        if self.logout_link.is_visible():
-            self.logout_link.click()
-            self.wait_for_load_state("networkidle")
-        else:
-            print("Logout link not visible; user may not be logged in.")
+        self.navigate("https://automationteststore.com/index.php?rt=account/logout")
+        self.page.wait_for_timeout(1000)
     
     # ==========================================
     # Verifications
