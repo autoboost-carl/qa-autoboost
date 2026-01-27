@@ -136,6 +136,7 @@ def test_registration_with_mismatched_passwords(page: Page, user_data: dict):
 
     print(err)
 
+@pytest.mark.smoke
 def test_registration_with_existing_email(page: Page, user_data: dict):
     register_page = RegisterPage(page)
     register_page.navigate_to_register()
