@@ -35,8 +35,12 @@ class LoginPage(BasePage):
     def success_message(self):
         return self.page.locator("//*[contains(text(), 'Welcome back')]")
     
+    @property
+    def logout_link(self):
+        return self.page.locator("a[href*='account/logout']")
+    
     # ==========================================
-    # Actions
+    # Actions - Login
     # ==========================================
     def navigate_to_login(self):
         self.navigate(self.url)
@@ -56,6 +60,7 @@ class LoginPage(BasePage):
     def click_forgot_password_link(self) -> None:
         self.forgot_password_link.click()
     
+    
     # ==========================================
     # High-Level Methods
     # ==========================================
@@ -65,6 +70,14 @@ class LoginPage(BasePage):
         self.enter_password(password)
         self.click_login_button()
         self.wait_for_load_state("networkidle")
+    
+    def logout(self) -> None:
+        """Logout from the account by navigating to logout URL."""
+        if self.logout_link.is_visible():
+            self.logout_link.click()
+            self.wait_for_load_state("networkidle")
+        else:
+            print("Logout link not visible; user may not be logged in.")
     
     # ==========================================
     # Verifications
