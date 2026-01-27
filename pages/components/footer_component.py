@@ -54,4 +54,12 @@ class FooterComponent(BasePage):
     def is_privacy_policy_visible(self) -> bool:
         return self.privacy_policy_link.is_visible()
     
+    #==========================================
+    # Assertions - Footer Links
+    #==========================================
+    def assert_footer_links_visible(self) -> None:
+        self.assert_element_visible(self.about_us_link, "About us")
+        self.assert_element_visible(self.privacy_policy_link, "Privacy Link")
+        self.assert_element_visible(self.contact_us_link, "Contact Us")
+    
     
