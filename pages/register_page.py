@@ -20,7 +20,7 @@ class RegisterPage(BasePage):
     
     @property
     def email_input(self):
-        return self.page.locator("input[name='email']")
+        return self.page.locator("input#AccountFrm_email")
     
     @property
     def telephone_input(self):
@@ -108,7 +108,7 @@ class RegisterPage(BasePage):
     
     @property
     def success_message(self):
-        return self.page.locator("//*[contains(text(), 'Your Account Has Been Created!')]")
+        return self.page.locator("span.maintext:has-text('Your Account Has Been Created!')")
     
     @property
     def error_message(self):
@@ -194,7 +194,7 @@ class RegisterPage(BasePage):
     def register_user(self, user_data: dict) -> None:
         """Full user registration process."""
         # Personal Information
-        self.enter_first_name(user_data["first_name="])
+        self.enter_first_name(user_data["first_name"])
         self.enter_last_name(user_data["last_name"])
         self.enter_email(user_data["email"])
         self.enter_telephone(user_data["telephone"])
@@ -264,3 +264,11 @@ class RegisterPage(BasePage):
     def assert_error_displayed(self) -> None:
         """Assert that an error message is displayed."""
         self.assert_element_visible(self.error_message)
+    
+    def assert_privacy_policy_error_displayed(self) -> None:
+        """Assert that privacy policy error is displayed."""
+        self.assert_element_visible(self.error_message)
+    
+    def logout(self) -> None:
+        """Logout from the account by navigating to logout URL."""
+        self.navigate("https://automationteststore.com/index.php?rt=account/logout")
