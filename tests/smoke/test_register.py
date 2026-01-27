@@ -1,6 +1,7 @@
 import pytest 
 from playwright.sync_api import Page
 from pages.register_page import RegisterPage
+from pages.login_page import LoginPage
 from faker import Faker
 
 faker = Faker()
@@ -139,6 +140,7 @@ def test_registration_with_mismatched_passwords(page: Page, user_data: dict):
 @pytest.mark.smoke
 def test_registration_with_existing_email(page: Page, user_data: dict):
     register_page = RegisterPage(page)
+    login_page = LoginPage(page)
     register_page.navigate_to_register()
 
     # First, register a user to ensure the email exists
@@ -146,7 +148,7 @@ def test_registration_with_existing_email(page: Page, user_data: dict):
     register_page.assert_registration_successful()
 
     # Logout before attempting to register again
-    register_page.logout()
+    login_page.logout()
     page.wait_for_timeout(1000)
 
     # Now, attempt to register again with the same email
