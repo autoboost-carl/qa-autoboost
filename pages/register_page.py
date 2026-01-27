@@ -188,6 +188,14 @@ class RegisterPage(BasePage):
         self.continue_button.click()
     
     # ==========================================
+    # Actions - Logout
+    # ==========================================
+    
+    def logout(self) -> None:
+        """Logout from the account by navigating to logout URL."""
+        self.navigate("https://automationteststore.com/index.php?rt=account/logout")
+    
+    # ==========================================
     # Full Registration Process
     # ==========================================
 
@@ -269,6 +277,4 @@ class RegisterPage(BasePage):
         """Assert that privacy policy error is displayed."""
         self.assert_element_visible(self.error_message)
     
-    def logout(self) -> None:
-        """Logout from the account by navigating to logout URL."""
-        self.navigate("https://automationteststore.com/index.php?rt=account/logout")
+    
