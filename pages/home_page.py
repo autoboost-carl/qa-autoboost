@@ -17,7 +17,7 @@ class HomePage(BasePage):
 
     @property
     def main_banner(self):
-        return self.page.locator("div.banner-container")
+        return self.page.locator("div.banner_container")
     
     @property
     def featured_products_section(self):
@@ -69,8 +69,8 @@ class HomePage(BasePage):
         assert self.is_on_home_page(), "Not on the Home Page."
 
         # Also assert header and footer components are visible
-        assert self.header.assert_header_visible()
-        assert self.footer.assert_footer_links_visible()
+        self.header.assert_header_visible()
+        self.footer.assert_footer_links_visible()
 
     def assert_products_visible(self, product_name: str) -> None:
         product_count = self.get_product_count()

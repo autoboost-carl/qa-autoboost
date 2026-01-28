@@ -12,7 +12,7 @@ class HeaderComponent(BasePage):
     
     @property
     def logo(self):
-        return self.page.locator("div#logo a")
+        return self.page.locator("a.logo")
     
     @property
     def search_input(self):
@@ -24,7 +24,7 @@ class HeaderComponent(BasePage):
     
     @property
     def search_button(self):
-        return self.page.locator("div.button-in-input i.fa-search")
+        return self.page.locator("i.fa-search")
     
     @property
     def search_results(self):
@@ -123,10 +123,10 @@ class HeaderComponent(BasePage):
     #=========================================
 
     def assert_header_visible(self) -> None:
-        self.assert_element_visible(self.logo, "Logo")
-        self.assert_element_visible(self.search_input, "Search Input")
-        self.assert_element_visible(self.search_button, "Search Button")
-        self.assert_element_visible(self.main_navigation_links, "Main Navigation Links")
+        self.assert_element_visible(self.logo)
+        self.assert_element_visible(self.search_input)
+        self.assert_element_visible(self.search_button)
+        self.assert_element_visible(self.main_navigation_links)
 
     def assert_user_logged_in(self) -> None:
         assert self.is_user_logged_in(), "User is not logged in, but expected to be logged in."

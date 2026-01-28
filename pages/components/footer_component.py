@@ -58,8 +58,8 @@ class FooterComponent(BasePage):
     # Assertions - Footer Links
     #==========================================
     def assert_footer_links_visible(self) -> None:
-        self.assert_element_visible(self.about_us_link, "About us")
-        self.assert_element_visible(self.privacy_policy_link, "Privacy Link")
-        self.assert_element_visible(self.contact_us_link, "Contact Us")
+        self.assert_element_visible(self.about_us_link)
+        self.assert_element_visible(self.privacy_policy_link)
+        self.assert_element_visible(self.contact_us_link)
     
     
