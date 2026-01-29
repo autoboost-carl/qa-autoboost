@@ -34,17 +34,14 @@ class CartPage(BasePage):
     # Locators - Product elements on cart
     #=====================================
 
-    @property
     def get_product_row_by_name(self, product_name: str):
         # Check for row containing product name
         return self.page.locator(f"table.table-striped tbody tr:has-text('{product_name}')")
     
-    @property
     def qty_input_in_row(self, row: Locator) -> Locator:
         # Quantity input typically named "quantity[...]" or similar
         return row.locator("input[type='text'][name*='quantity']").first
 
-    @property
     def remove_button_in_row(self, row: Locator) -> Locator:
         # Remove often via a trash icon 
         return row.locator("a[href*='remove'], a:has(i.fa-trash)").first
@@ -79,8 +76,11 @@ class CartPage(BasePage):
     #=====================================
 
     def update_qty(self, product_name: str, new_qty: int) -> None:
+        # Getting the row for the product
+        row = self.get_product_row_by_name(product_name)
+        
         # Obtaining qty input
-        qty_input = self.qty_input_in_row(product_name)
+        qty_input = self.qty_input_in_row(row)
 
         # Clear and write a new qty
         qty_input.fill(str(new_qty))
@@ -92,7 +92,10 @@ class CartPage(BasePage):
         self.wait_for_load_state("networkidle")
     
     def remove_product(self, product_name: str) -> None:
-        remove_button = self.remove_button_in_row(product_name)
+        # Getting the row for the product
+        row = self.get_product_row_by_name(product_name)
+        
+        remove_button = self.remove_button_in_row(row)
         remove_button.click()
 
         self.wait_for_load_state("networkidle")
@@ -117,7 +120,8 @@ class CartPage(BasePage):
         return self.cart_items.count()
     
     def get_quantity_for_product(self, product_name: str) -> int:
-        qty_input = self.qty_input_in_row(product_name)
+        row = self.get_product_row_by_name(product_name)
+        qty_input = self.qty_input_in_row(row)
         qty_value = qty_input.input_value()
         return int(qty_value) if qty_value else 0
     
