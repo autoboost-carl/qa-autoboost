@@ -82,7 +82,7 @@ def test_add_multiple_quantities_to_cart(page: Page):
 
     print("Multiple quantities added to cart")
 
-@allure.feature("Shopping cart")
+@allure.feature("Shopping Cart")
 @allure.severity(allure.severity_level.CRITICAL)
 @pytest.mark.regression
 def test_remove_product_from_cart(page: Page):
