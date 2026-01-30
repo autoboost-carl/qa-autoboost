@@ -1,8 +1,7 @@
 import pytest
 from playwright.sync_api import Page, expect
 
-@pytest.mark.smoke
-@pytest.mark.p0
+@pytest.mark.regression
 def test_home_page_loads(page: Page, base_url: str):
     # Navigate to the home page
     page.goto(base_url)
@@ -14,8 +13,7 @@ def test_home_page_loads(page: Page, base_url: str):
 
     print("Home page loaded successfully")
 
-@pytest.mark.smoke
-@pytest.mark.p0
+@pytest.mark.regression
 def test_main_navigation_visible(page: Page, base_url: str):
     # Navigate to the home page
     page.goto(base_url)
@@ -35,12 +33,5 @@ def test_main_navigation_visible(page: Page, base_url: str):
     for i, link in enumerate(all_links):
         text = link.text_content()
         print(f" {i + 1}. [{text.strip()}]")
-
-#@pytest.mark.smoke
-#def test_screenshot_on_failure(page: Page, base_url: str):
-#    # Navigate to the home page
-#    page.goto(base_url)
-#    # Intentionally fail the test to trigger screenshot capture
-#    expect(page).to_have_title("This title is incorrect to trigger failure")
    
     

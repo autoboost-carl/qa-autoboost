@@ -25,3 +25,8 @@ ENV/
 .vscode/
 .DS_Storescreenshots/
 .env
+reports/
+allure-results/
+allure-reports/
+screenshots/
+videos/
