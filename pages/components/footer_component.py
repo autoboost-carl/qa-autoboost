@@ -60,46 +60,50 @@ class FooterComponent(BasePage):
     # Actions - Footer Links
     #==========================================
     def click_about_us(self) -> None:
-        self.about_us_link.click()
+        self.click_element(self.about_us_link)
 
     def click_contact_us(self) -> None:
-        self.contact_us_link.click()
+        self.click_element(self.contact_us_link)
+        # contact form should be visible
+        self.wait_for_element(self.contact_firstname_input)
 
     def click_privacy_policy(self) -> None:
-        self.privacy_policy_link.click()
+        self.click_element(self.privacy_policy_link)
     
     #==========================================
     # Actions - Contact Form
     #==========================================
     def fill_and_submit_contact_form(self, firstname: str, email: str, enquiry: str) -> None:
         """Fill out and submit the contact us form"""
-        self.contact_firstname_input.fill(firstname)
-        self.contact_email_input.fill(email)
-        self.contact_enquiry_textarea.fill(enquiry)
-        self.submit_inquiry.click()
-        self.wait_for_load_state("networkidle")
+        self.fill_input(self.contact_firstname_input, firstname)
+        self.fill_input(self.contact_email_input, email)
+        self.fill_input(self.contact_enquiry_textarea, enquiry)
+
+        self.click_element(self.submit_inquiry)
+
+        self.wait_for_element(self.success_message)
     
     #==========================================
     # Actions - Scroll to Footer
     #==========================================
     def scroll_to_footer(self) -> None:
         self.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        self.wait_for_load_state("networkidle")
+        self.wait_for_element(self.contact_us_link)
     
     #==========================================
     # Verifications - Footer Links
     #==========================================
     def is_about_us_visible(self) -> bool:
-        return self.about_us_link.is_visible()
+        return self.is_visible(self.about_us_link)
     
     def is_contact_us_visible(self) -> bool:
-        return self.contact_us_link.is_visible()
+        return self.is_visible(self.contact_us_link)
     
     def is_privacy_policy_visible(self) -> bool:
-        return self.privacy_policy_link.is_visible()
+        return self.is_visible(self.privacy_policy_link)
     
     def is_success_message_displayed(self) -> bool:
-        return self.success_message.is_visible()
+        return self.is_visible(self.success_message)
     
     #==========================================
     # Assertions - Footer Links
@@ -109,7 +113,7 @@ class FooterComponent(BasePage):
         self.assert_element_visible(self.privacy_policy_link)
         self.assert_element_visible(self.contact_us_link)
     
-    def assert_successful_contact_us(self, expected_contact_us_text: str = None) -> None:
+    def assert_successful_contact_us(self, expected_contact_us_text: str | None = None) -> None:
         self.assert_element_visible(self.success_message)
         if expected_contact_us_text:
             self.assert_text_contains(self.success_message, expected_contact_us_text)
