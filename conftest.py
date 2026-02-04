@@ -1,9 +1,8 @@
+import os
 import pytest
 import allure
 from allure_commons.types import AttachmentType
 from playwright.sync_api import Page, BrowserContext
-import os
-from datetime import datetime
 from dotenv import load_dotenv
 from test_data.test_data import TestDataGenerator
 
@@ -30,33 +29,30 @@ def base_url() -> str:
     return os.getenv("BASE_URL", "https://automationteststore.com/")
 
 #=====================
-# Automatic screenshot on failure
+# Hook: report + Allure attachments + rep_call attribute
 #=====================
-@pytest.fixture(autouse=True)
-def screenshot_on_failure(request, page: Page):
-    # Execute the test
-    yield
-    # If the test failed, take a screenshot
-    if hasattr(request.node, "rep_call") and request.node.rep_call.failed:
-        # Create screenshot with timestamp
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        screenshot_path = f"screenshots/{request.node.name}_{timestamp}.png"
-        # Ensure the screenshots directory exists
-        os.makedirs(os.path.dirname(screenshot_path), exist_ok=True)
-        # Take screenshot
-        page.screenshot(path=screenshot_path)
-        print(f"Screenshot saved to {screenshot_path}")
-
-#=====================
-# Hook to capture test results
-#=====================
-@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    # Execute all other hooks to obtain the report object
     outcome = yield
     rep = outcome.get_result()
-    # Set a report attribute for each phase of a call, which can be "setup", "call", "teardown"
+
+    # Keep these attributes so other fixtures can check failures
     setattr(item, f"rep_{rep.when}", rep)
+
+    # Attach to Allure only on test failure
+    if rep.when == "call" and rep.failed:
+        page = item.funcargs.get("page", None)
+        if page:
+            allure.attach(
+                page.screenshot(full_page=True),
+                name="screenshot",
+                attachment_type=AttachmentType.PNG,
+            )
+            allure.attach(
+                page.content(),
+                name="page_source",
+                attachment_type=AttachmentType.HTML,
+            )
 
 #=====================
 # Test Data Fixtures - E2E Tests
@@ -119,26 +115,3 @@ def generate_data_for_contact_us():
     """Fixture for contact us form data"""
     return TestDataGenerator.generate_data_for_contact_us()
 
-#============================
-# Allure Reports
-#============================
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    rep = outcome.get_result()
-
-    if rep.when == "call" and rep.failed:
-        page = item.funcargs.get("page", None)
-        if page:
-            # Screenshot
-            allure.attach(
-                page.screenshot(full_page=True),
-                name="screenshot",
-                attachment_type=AttachmentType.PNG,
-            )
-            # Page HTML
-            allure.attach(
-                page.content(),
-                name="page_source",
-                attachment_type=AttachmentType.HTML,
-            )
