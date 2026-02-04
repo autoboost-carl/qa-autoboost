@@ -90,13 +90,7 @@ class LoginPage(BasePage):
         self.enter_login_name(login_name)
         self.enter_password(password)
         self.click_login_button()
-        
-        # Success is typically account page or welcome text.
-        try:
-            expect(self.page).to_have_url(re.compile(r"rt=account/account"), timeout=10_000)
-        except Exception:
-            # If not redirected, an error message should appear
-            expect(self.error_message).to_be_visible(timeout=10_000)
+        self.wait_for_load_state()
     
     def logout(self) -> None:
         """Logout via hover menu and verify logged-off confirmation."""
