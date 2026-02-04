@@ -1,4 +1,4 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 from pages.base.base_page import BasePage
 
 class RegisterPage(BasePage):
@@ -120,56 +120,56 @@ class RegisterPage(BasePage):
     # ==========================================
     def navigate_to_register(self):
         self.navigate(self.url)
-        self.wait_for_load_state("networkidle")
+        self.wait_for_element(self.page_heading)
     
     def enter_first_name(self, first_name: str) -> None:
-        self.first_name_input.fill(first_name)
+        self.fill_input(self.first_name_input, first_name)
     
     def enter_last_name(self, last_name: str) -> None:
-        self.last_name_input.fill(last_name)
+        self.fill_input(self.last_name_input, last_name)
     
     def enter_email(self, email: str) -> None:
-        self.email_input.fill(email)
+        self.fill_input(self.email_input, email)
     
     def enter_telephone(self, telephone: str) -> None:
-        self.telephone_input.fill(telephone)
+        self.fill_input(self.telephone_input, telephone)
     
     def enter_fax(self, fax: str) -> None:
-        self.fax_input.fill(fax)
+        self.fill_input(self.fax_input, fax)
     
     def enter_company(self, company: str) -> None:
-        self.company_input.fill(company)
+        self.fill_input(self.company_input, company)
     
     def enter_address_1(self, address_1: str) -> None:
-        self.address_1_input.fill(address_1)
+        self.fill_input(self.address_1_input, address_1)
     
     def enter_address_2(self, address_2: str) -> None:
-        self.address_2_input.fill(address_2)
+        self.fill_input(self.address_2_input, address_2)
     
     def enter_city(self, city: str) -> None:
-        self.city_input.fill(city)
+        self.fill_input(self.city_input, city)
     
     def select_region(self, region: str) -> None:
-        self.region_dropdown.select_option(region)
+        self.select_option(self.region_dropdown, region)
     
     def enter_zipcode(self, zipcode: str) -> None:
-        self.zipcode_input.fill(zipcode)
+        self.fill_input(self.zipcode_input, zipcode)
     
     def select_country(self, country: str) -> None:
-        self.country_dropdown.select_option(country)
+        self.select_option(self.country_dropdown, country)
     
     # ==========================================
     # Actions - Login Information
     # ==========================================
     
     def enter_login_name(self, login_name: str) -> None:
-        self.login_name_input.fill(login_name)
+        self.fill_input(self.login_name_input, login_name)
     
     def enter_password(self, password: str) -> None:
-        self.password_input.fill(password)
+        self.fill_input(self.password_input, password)
     
     def enter_confirm_password(self, confirm_password: str) -> None:
-        self.confirm_password_input.fill(confirm_password)
+        self.fill_input(self.confirm_password_input, confirm_password)
     
     # ==========================================
     # Actions - Newsletter & Privacy
@@ -177,15 +177,15 @@ class RegisterPage(BasePage):
 
     def select_newsletter_subscription(self, subscribe: bool) -> None:
         if subscribe:
-            self.newsletter_yes_radio.check()
+            self.check_box_radio(self.newsletter_yes_radio)
         else:
-            self.newsletter_no_radio.check()
+            self.check_box_radio(self.newsletter_no_radio)
     
     def agree_to_privacy_policy(self) -> None:
-        self.privacy_policy_checkbox.check()
+        self.check_box_radio(self.privacy_policy_checkbox)
 
     def click_continue_button(self) -> None:
-        self.continue_button.click()
+        self.click_element(self.continue_button)
     
     # ==========================================
     # Actions - Logout
@@ -221,7 +221,11 @@ class RegisterPage(BasePage):
 
         # Select country first to load regions
         self.select_country(user_data["country"])
-        self.page.wait_for_timeout(3000)  # Wait for regions to load
+        # Expect dropdown to have more than one option visible
+        expect(self.region_dropdown.locator("option")).to_have_count(
+            lambda count: count > 1,
+            timeout=10_000
+        )
         self.select_region(user_data["region"])
         self.enter_zipcode(user_data["zipcode"])
 
@@ -249,7 +253,6 @@ class RegisterPage(BasePage):
 
     def is_registration_successful(self) -> bool:
         """Check if registration was successful."""
-        self.wait_for_load_state("networkidle")
         return self.success_message.is_visible()
 
     def is_error_displayed(self) -> bool:
