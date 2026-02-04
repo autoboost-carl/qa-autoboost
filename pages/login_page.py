@@ -37,8 +37,25 @@ class LoginPage(BasePage):
         return self.page.locator("//*[contains(text(), 'Welcome back')]")
     
     @property
+    def welcome_menu_link(self):
+        # "Welcome back ..." top link (sometimes appears in top menu)
+        return self.page.locator("a").filter(has_text=re.compile(r"Welcome back", re.IGNORECASE)).first
+    
+    @property
+    def logout_menu_hover(self):
+        # The actual logout option: "Not {user}? Logoff"
+        return self.page.locator("a").filter(
+            has_text=re.compile(r"Not .*\\? Logoff", re.IGNORECASE)
+        ).first
+
+    @property
     def logout_link(self):
-        return self.page.locator("a[href*='account/logout']")
+        # Logout link typically contains account/logout
+        return self.page.locator("a[href*='account/logout']").first
+
+    @property
+    def logged_off_message(self):
+        return self.page.locator("text=You have been logged off your account.")
     
     # ==========================================
     # Actions - Login
@@ -82,15 +99,17 @@ class LoginPage(BasePage):
             expect(self.error_message).to_be_visible(timeout=10_000)
     
     def logout(self) -> None:
-        """Logout from the account by navigating to logout URL."""
-        # If you have a visible logout link, use it; otherwise navigate.
-        if self.logout_link.is_visible(timeout=1500):
-            self.click_element(self.logout_link)
-        else:
-            self.navigate("https://automationteststore.com/index.php?rt=account/logout")
+        """Logout via hover menu and verify logged-off confirmation."""
+        # Hover over the welcome/account dropdown
+        expect(self.welcome_menu_link).to_be_visible(timeout=10_000)
+        self.hover_over_element(self.welcome_menu_link)
 
-        # Verify we are no longer on account page (login page or logout success page)
-        expect(self.page).to_have_url(re.compile(r"rt=account/(logout|login)"), timeout=10_000)
+        # Wait for logout option to appear and click it
+        expect(self.logout_menu_hover).to_be_visible(timeout=10_000)
+        self.click_element(self.logout_menu_hover)
+
+        # Assert logged off confirmation
+        expect(self.logged_off_message).to_be_visible(timeout=10_000)
     
     # ==========================================
     # Verifications
