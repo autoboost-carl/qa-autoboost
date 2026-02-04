@@ -1,5 +1,6 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 from pages.base.base_page import BasePage
+import re
 
 class LoginPage(BasePage):
     def __init__(self, page: Page):
@@ -45,20 +46,20 @@ class LoginPage(BasePage):
     def navigate_to_login(self):
         self.navigate(self.url)
 
-        # Wait for the page to be fully loaded
-        self.wait_for_load_state("networkidle")
+        # Explicit ready signal: username input visible
+        self.wait_for_element(self.login_name_input)
     
     def enter_login_name(self, login_name: str) -> None:
-        self.login_name_input.fill(login_name)
+        self.fill_input(self.login_name_input, login_name)
     
     def enter_password(self, password: str) -> None:
-        self.password_input.fill(password)
+        self.fill_input(self.password_input, password)
     
     def click_login_button(self) -> None:
-        self.login_button.click()
+        self.click_element(self.login_button)
     
     def click_forgot_password_link(self) -> None:
-        self.forgot_password_link.click()
+        self.click_element(self.forgot_password_link)
     
     
     # ==========================================
@@ -66,15 +67,30 @@ class LoginPage(BasePage):
     # ==========================================
     def login(self, login_name: str, password: str) -> None:
         """Full login process."""
+        # Make sure we're on login page
+        expect(self.page).to_have_url(re.compile(r"rt=account/login"), timeout=10_000)
+
         self.enter_login_name(login_name)
         self.enter_password(password)
         self.click_login_button()
-        self.wait_for_load_state("networkidle")
+        
+        # Success is typically account page or welcome text.
+        try:
+            expect(self.page).to_have_url(re.compile(r"rt=account/account"), timeout=10_000)
+        except Exception:
+            # If not redirected, an error message should appear
+            expect(self.error_message).to_be_visible(timeout=10_000)
     
     def logout(self) -> None:
         """Logout from the account by navigating to logout URL."""
-        self.navigate("https://automationteststore.com/index.php?rt=account/logout")
-        self.page.wait_for_timeout(1000)
+        # If you have a visible logout link, use it; otherwise navigate.
+        if self.logout_link.is_visible(timeout=1500):
+            self.click_element(self.logout_link)
+        else:
+            self.navigate("https://automationteststore.com/index.php?rt=account/logout")
+
+        # Verify we are no longer on account page (login page or logout success page)
+        expect(self.page).to_have_url(re.compile(r"rt=account/(logout|login)"), timeout=10_000)
     
     # ==========================================
     # Verifications
@@ -89,13 +105,14 @@ class LoginPage(BasePage):
     # Assertions
     # ==========================================
     # Login with valid credentials
-    def assert_login_successful(self, expected_login_text: str = None) -> None:
-        self.assert_element_visible(self.success_message)
+    def assert_login_successful(self, expected_login_text: str | None = None) -> None:
+        # Prefer URL-based confirmation; welcome text can vary
+        expect(self.page).to_have_url(re.compile(r"rt=account/account"), timeout=10_000)
         if expected_login_text:
             self.assert_text_contains(self.success_message, expected_login_text)
 
     # Login with invalid credentials
-    def assert_error_displayed(self, expected_error_message: str = None) -> None:
+    def assert_error_displayed(self, expected_error_message: str | None = None) -> None:
         self.assert_element_visible(self.error_message)
         if expected_error_message:
             self.assert_text_contains(self.error_message, expected_error_message)
