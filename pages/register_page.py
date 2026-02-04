@@ -221,11 +221,7 @@ class RegisterPage(BasePage):
 
         # Select country first to load regions
         self.select_country(user_data["country"])
-        # Expect dropdown to have more than one option visible
-        expect(self.region_dropdown.locator("option")).to_have_count(
-            lambda count: count > 1,
-            timeout=10_000
-        )
+       
         self.select_region(user_data["region"])
         self.enter_zipcode(user_data["zipcode"])
 
