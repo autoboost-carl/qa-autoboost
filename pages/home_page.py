@@ -1,4 +1,4 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 from pages.base.base_page import BasePage
 from pages.components.header_component import HeaderComponent
 from pages.components.footer_component import FooterComponent
@@ -50,7 +50,7 @@ class HomePage(BasePage):
     def is_on_home_page(self) -> bool:
         """Verify if the current page is the home page by checking the URL and main banner visibility."""
         url_check = self.page.url == self.url
-        banner_visible = self.main_banner.is_visible()
+        banner_visible = expect(self.main_banner).to_be_visible
         return url_check and banner_visible
     
     def get_product_count(self) -> int:
