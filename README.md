@@ -68,15 +68,15 @@ The goal of this project is to simulate a **real-world QA automation framework**
 
 ## 🧠 Test Strategy
 
-- Smoke (P0): critical flows (login, register user, search)
+- **Smoke (P0):** critical flows (login, register user, search)
 
-- E2E (P1): full purchase flows (guest & registered user)
+- **E2E (P1):** full purchase flows (guest & registered user)
 
-- Regression (P2): edge cases and validations
+- **Regression (P2):** edge cases and validations
 
 ---
 
-🧩 Key Features
+## 🧩 Key Features
 
 - Stable waits using Playwright expect()
 
@@ -126,7 +126,36 @@ These reports include:
 - Test steps
 - Screenshots on failure
 
+---
 
+## 🔄 CI/CD
+This project uses GitHub Actions for continuous integration:
+
+- Runs on push and pull requests
+
+- Executes smoke and e2e tests
+
+- Uses Chromium in headless mode
+
+- Uploads Playwright artifacts (video, trace, screenshots on failure)
+
+- Publishes Allure report to GitHub Pages
+
+---
+
+## 🧹 Repository Hygiene
+
+The following files and folders are not committed to the repository:
+
+- `allure-results/`
+
+- `reports/`
+
+- `screenshots/`
+
+- `.env`
+
+All test artifacts are handled via CI artifacts and Allure reports only.
 
 
 
