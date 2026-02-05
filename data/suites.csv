@@ -1,38 +1,5 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","2754","test_login_with_valid_credentials[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
-"","3074","test_login_with_invalid_credentials[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
-"","2636","test_registration_without_privacy_policy_agreement[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
-"","2381","test_login_page_elements_visible[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
-"","5435","test_successful_registration_all_fields[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
-"","2564","test_registration_without_mandatory_fields[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
-"
-    E2E test for cart management with multiple products
-    
-    Steps:
-    1. Add product 1 to cart (with alternatives if not found)
-    2. Continue shopping
-    3. Add product 2 to cart (with alternatives if not found)
-    4. View cart with both products
-    5. Update quantity of product 1
-    6. Remove product 2
-    7. Proceed to checkout with product 1
-    8. Complete purchase as guest
-    ","37298","test_cart_management_multiple_products_flow[chromium]","tests.e2e","2026-02-05","passed","2026-02-05","","test_complete_purchase_flow","",""
-"","2369","test_login_with_empty_credentials[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
-"","2674","test_registration_with_mismatched_passwords[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
-"
-    E2E test for complete purchase flow as guest
-    
-    Steps:
-    1. Navigate to home
-    2. Search for product
-    3. Add product to cart
-    4. View cart
-    5. Proceed to checkout as guest
-    6. Fill checkout information
-    7. Confirm order
-    8. Verify order successful
-    ","17535","test_complete_purchase_flow_as_guest[chromium]","tests.e2e","2026-02-05","passed","2026-02-05","","test_complete_purchase_flow","",""
+"","2573","test_registration_without_privacy_policy_agreement[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
 "
     E2E test for complete purchase flow as registered user
     
@@ -45,5 +12,38 @@
     6. Fill shipping information
     7. Confirm order
     8. Verify order successful
-    ","11031","test_complete_purchase_flow_as_registered_user[chromium]","tests.e2e","2026-02-05","passed","2026-02-05","","test_complete_purchase_flow","",""
-"","8458","test_registration_with_existing_email[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
+    ","10698","test_complete_purchase_flow_as_registered_user[chromium]","tests.e2e","2026-02-05","passed","2026-02-05","","test_complete_purchase_flow","",""
+"","8066","test_registration_with_existing_email[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
+"","1610","test_login_page_elements_visible[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
+"","2351","test_login_with_empty_credentials[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
+"","2226","test_login_with_invalid_credentials[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
+"","4663","test_successful_registration_all_fields[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
+"
+    E2E test for cart management with multiple products
+    
+    Steps:
+    1. Add product 1 to cart (with alternatives if not found)
+    2. Continue shopping
+    3. Add product 2 to cart (with alternatives if not found)
+    4. View cart with both products
+    5. Update quantity of product 1
+    6. Remove product 2
+    7. Proceed to checkout with product 1
+    8. Complete purchase as guest
+    ","37288","test_cart_management_multiple_products_flow[chromium]","tests.e2e","2026-02-05","passed","2026-02-05","","test_complete_purchase_flow","",""
+"","3503","test_registration_with_mismatched_passwords[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
+"
+    E2E test for complete purchase flow as guest
+    
+    Steps:
+    1. Navigate to home
+    2. Search for product
+    3. Add product to cart
+    4. View cart
+    5. Proceed to checkout as guest
+    6. Fill checkout information
+    7. Confirm order
+    8. Verify order successful
+    ","13508","test_complete_purchase_flow_as_guest[chromium]","tests.e2e","2026-02-05","passed","2026-02-05","","test_complete_purchase_flow","",""
+"","3109","test_registration_without_mandatory_fields[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_register","",""
+"","2546","test_login_with_valid_credentials[chromium]","tests.smoke","2026-02-05","passed","2026-02-05","","test_login","",""
