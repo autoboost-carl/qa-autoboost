@@ -60,7 +60,7 @@ class CartPage(BasePage):
     def checkout_button(self):
         # Use the checkout link in the header menu with valid href
         # This one goes to checkout/shipping
-        return self.page.locator("a.menu_checkout").first
+        return self.page.locator("#cart_checkout1")
 
     @property
     def continue_shopping_button(self):
@@ -72,10 +72,10 @@ class CartPage(BasePage):
 
     def navigate_to_cart(self) -> None:
         self.navigate(self.url)
-        # either empty message OR cart table visible
-        if self.empty_cart_message.is_visible(timeout=1500):
-            return
-        expect(self.cart_table).to_be_visible(timeout=10_000)
+
+        # Assert you're on a cart URL
+        expect(self.page).to_have_url(re.compile(r"rt=checkout/"), timeout=10_000)
+        
     
     #=====================================
     # Actions - Cart Management
@@ -115,15 +115,10 @@ class CartPage(BasePage):
         expect(row).not_to_be_visible(timeout=10_000)
     
     def proceed_to_checkout(self) -> None:
-        """Navigate to checkout by going to the shipping page"""
-        # If the checkout button exists, prefer clicking it 
-        if self.checkout_button.is_visible(timeout=1500):
-            self.click_element(self.checkout_button)
-        else:
-            self.navigate("https://automationteststore.com/index.php?rt=checkout/shipping")
+        self.click_element(self.checkout_button)
         
         # Assert you're on a checkout URL
-        expect(self.page).to_have_url(re.compile(r"rt=checkout/"), timeout=10_000)
+        expect(self.page).to_have_url(re.compile(r"rt=account/"), timeout=10_000)
     
     def continue_shopping(self) -> None:
         self.click_element(self.continue_shopping_button)
