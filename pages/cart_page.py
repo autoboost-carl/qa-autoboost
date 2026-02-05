@@ -1,7 +1,8 @@
-from playwright.sync_api import Page, Locator
+from playwright.sync_api import Page, Locator, expect
 from pages.base.base_page import BasePage
 from pages.components.header_component import HeaderComponent
 from pages.components.footer_component import FooterComponent
+import re
 
 class CartPage(BasePage):
     def __init__(self, page: Page):
@@ -28,7 +29,7 @@ class CartPage(BasePage):
     
     @property
     def empty_cart_message(self):
-        return self.page.locator("div.contentpanel:has-text('shopping cart is empty')")
+        return self.page.locator("div.contentpanel").filter(has_text=re.compile(r"shopping cart is empty", re.IGNORECASE))
     
     #=====================================
     # Locators - Product elements on cart
@@ -36,7 +37,7 @@ class CartPage(BasePage):
 
     def get_product_row_by_name(self, product_name: str):
         # Check for row containing product name
-        return self.page.locator(f"table.table-striped tbody tr:has-text('{product_name}')")
+        return self.page.locator("table.table-striped tbody tr").filter(has_text=product_name)
     
     def qty_input_in_row(self, row: Locator) -> Locator:
         # Quantity input typically named "quantity[...]" or similar
@@ -71,7 +72,10 @@ class CartPage(BasePage):
 
     def navigate_to_cart(self) -> None:
         self.navigate(self.url)
-        self.wait_for_load_state("networkidle")
+        # either empty message OR cart table visible
+        if self.empty_cart_message.is_visible(timeout=1500):
+            return
+        expect(self.cart_table).to_be_visible(timeout=10_000)
     
     #=====================================
     # Actions - Cart Management
@@ -80,46 +84,50 @@ class CartPage(BasePage):
     def update_qty(self, product_name: str, new_qty: int) -> None:
         # Getting the row for the product
         row = self.get_product_row_by_name(product_name)
-        
+        expect(row).to_be_visible(timeout=10_000)
+
         # Obtaining qty input
         qty_input = self.qty_input_in_row(row)
+        expect(qty_input).to_be_visible(timeout=10_000)
 
         # Clear and write a new qty
-        qty_input.fill(str(new_qty))
+        self.fill_input(qty_input, str(new_qty))
 
         # Try to click update button if it exists
-        try:
-            update_btn = self.get_update_button
-            if update_btn.is_visible(timeout=3000):
-                update_btn.click()
-            else:
-                # If no update button, press Enter on the input field
-                qty_input.press("Enter")
-        except:
-            # If button doesn't exist or timeout, press Enter on the input field
-            qty_input.press("Enter")
-        
-        # Wait for update
-        self.wait_for_load_state("networkidle")
+        update_btn = self.get_update_button
+        if update_btn.is_visible(timeout=1500):
+            self.click_element(update_btn)
+        else:
+            qty_input.press("Enter") # If no update button, press Enter on the input field
+
+        # Input value becomes new qty
+        expect(qty_input).to_have_value(str(new_qty), timeout=10_000)
     
     def remove_product(self, product_name: str) -> None:
         # Getting the row for the product
         row = self.get_product_row_by_name(product_name)
+        expect(row).to_be_visible(timeout=10_000)
         
         remove_button = self.remove_button_in_row(row)
-        remove_button.click()
+        self.click_element(remove_button)
 
-        self.wait_for_load_state("networkidle")
+        # Row disappears
+        expect(row).not_to_be_visible(timeout=10_000)
     
     def proceed_to_checkout(self) -> None:
         """Navigate to checkout by going to the shipping page"""
-        # Navigate directly to shipping/checkout
-        self.navigate("https://automationteststore.com/index.php?rt=checkout/shipping")
-        self.wait_for_load_state("networkidle")
+        # If the checkout button exists, prefer clicking it 
+        if self.checkout_button.is_visible(timeout=1500):
+            self.click_element(self.checkout_button)
+        else:
+            self.navigate("https://automationteststore.com/index.php?rt=checkout/shipping")
+        
+        # Assert you're on a checkout URL
+        expect(self.page).to_have_url(re.compile(r"rt=checkout/"), timeout=10_000)
     
     def continue_shopping(self) -> None:
-        self.continue_shopping_button.click()
-        self.wait_for_load_state("networkidle")
+        self.click_element(self.continue_shopping_button)
+        self.wait_for_load_state()
     
     #=====================================
     # Actions - Obtaining info
@@ -130,11 +138,15 @@ class CartPage(BasePage):
         if self.is_cart_empty():
             return 0
         # Count product rows
-        return self.cart_items.count()
+        return self.count_elements(self.cart_items)
     
     def get_quantity_for_product(self, product_name: str) -> int:
         row = self.get_product_row_by_name(product_name)
+        expect(row).to_be_visible(timeout=10_000)
+
         qty_input = self.qty_input_in_row(row)
+        expect(qty_input).to_be_visible(timeout=10_000)
+
         qty_value = qty_input.input_value()
         return int(qty_value) if qty_value else 0
     
@@ -146,18 +158,11 @@ class CartPage(BasePage):
         return self.empty_cart_message.is_visible()
     
     def is_product_in_cart(self, product_name: str) -> bool:
-        try:
-            product_row = self.get_product_row_by_name(product_name)
-            return product_row.is_visible()
-        except:
-            return False
+        product_row = self.get_product_row_by_name(product_name)
+        return product_row.is_visible(timeout=1500)
         
     def is_checkout_button_visible(self) -> bool:
-        """Check if checkout button is visible on the page"""
-        try:
-            return self.checkout_button.is_visible(timeout=5000)
-        except:
-            return False
+        return self.checkout_button.is_visible(timeout=1500)
     
     #=====================================
     # Assertions
@@ -170,13 +175,18 @@ class CartPage(BasePage):
         assert self.is_cart_empty(), "Cart contains items but should be empty"
     
     def assert_product_in_cart(self, product_name: str) -> None:
-        assert self.is_product_in_cart(product_name), f"Product {product_name} not found in cart"
+        row = self.get_product_row_by_name(product_name)
+        expect(row).to_be_visible(timeout=10_000)
     
     def assert_product_not_in_cart(self, product_name: str) -> None:
-        assert not self.is_product_in_cart(product_name), f"Product {product_name} found in cart but should not be there"
+        row = self.get_product_row_by_name(product_name)
+        expect(row).not_to_be_visible(timeout=10_000)
     
     def assert_product_qty(self, product_name: str, expected_qty: int) -> None:
-        actual_qty = self.get_quantity_for_product(product_name)
-        assert actual_qty == expected_qty, f"Expected quantity {expected_qty} for {product_name} but got {actual_qty} instead"
+        row = self.get_product_row_by_name(product_name)
+        expect(row).to_be_visible(timeout=10_000)
+
+        qty_input = self.qty_input_in_row(row)
+        expect(qty_input).to_have_value(str(expected_qty), timeout=10_000)
     
     
