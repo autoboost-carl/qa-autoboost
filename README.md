@@ -62,4 +62,72 @@ The goal of this project is to simulate a **real-world QA automation framework**
 ├── requirements.txt
 └── README.md
 
+```
+
+---
+
+## 🧠 Test Strategy
+
+- Smoke (P0): critical flows (login, register user, search)
+
+- E2E (P1): full purchase flows (guest & registered user)
+
+- Regression (P2): edge cases and validations
+
+---
+
+🧩 Key Features
+
+- Stable waits using Playwright expect()
+
+- Cart management (update, remove, multi-product)
+
+- UI-based login/logout
+
+- Allure reporting with screenshots
+
+---
+
+## ▶️ Running Tests
+
+- Install requirements:
+
+```
+pip install -r requirements.txt
+playwright install
+pytest
+```
+
+- Run all tests
+
+```
+pytest
+```
+
+- Run specific suites:
+
+```
+pytest -m smoke
+pytest -m e2e
+pytest -m regression
+```
+
+---
+
+## 📊 Reporting (Allure)
+
+After running your tests you can generate and view the Allure report locally:
+
+```
+allure serve allure-results
+```
+
+These reports include:
+- Test steps
+- Screenshots on failure
+
+
+
+
+
 
