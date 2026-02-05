@@ -5,6 +5,7 @@ These tests verify the full checkout process for different user types
 import pytest
 import allure
 from playwright.sync_api import Page
+from pages.base.base_page import BasePage
 from pages.home_page import HomePage
 from pages.product_page import ProductPage
 from pages.cart_page import CartPage
@@ -34,6 +35,7 @@ def test_complete_purchase_flow_as_guest(page: Page, guest_checkout_data):
     8. Verify order successful
     """
     # Initialize page objects
+    base_page = BasePage(page)
     home_page = HomePage(page)
     product_page = ProductPage(page)
     cart_page = CartPage(page)
@@ -47,18 +49,21 @@ def test_complete_purchase_flow_as_guest(page: Page, guest_checkout_data):
     with allure.step("Search for product"):
         # Step 2: Search for product
         home_page.header.search_product_with_button(guest_checkout_data["product_search"])
-        page.wait_for_load_state("networkidle")
+        base_page.wait_for_load_state()
     
     with allure.step("Select first product from results and add it to the cart"):
         # Step 3: Add product to cart
         first_product = page.locator("a.prdocutname, a.productname").first
         assert first_product.count() > 0, f"❌ Product '{guest_checkout_data['product_search']}' not found in search results"
         first_product.click()
-        page.wait_for_load_state("domcontentloaded")
+
+        base_page.wait_for_load_state()
+
         product_page.assert_on_product_page()
-        product_page.add_to_cart()
+        product_page.add_to_cart_with_quantity(7)
         print(f"{guest_checkout_data["product_search"]} was added successfully")
-        page.wait_for_load_state("networkidle")
+
+        base_page.wait_for_load_state()
     
     with allure.step("Verify the product was added successfully and the cart is not empty"):
         # Step 4: Assert cart product
@@ -74,7 +79,7 @@ def test_complete_purchase_flow_as_guest(page: Page, guest_checkout_data):
     with allure.step("Fill checkout information"):
         # Step 6: Fill checkout information
         checkout_page.select_guest_checkout()
-        page.wait_for_load_state("networkidle")
+        base_page.wait_for_load_state()
     
         checkout_page.fill_guest_information(
             email=guest_checkout_data["email"],
@@ -121,6 +126,7 @@ def test_complete_purchase_flow_as_registered_user(page: Page, registered_user_c
     8. Verify order successful
     """
     # Initialize page objects
+    base_page = BasePage(page)
     home_page = HomePage(page)
     product_page = ProductPage(page)
     cart_page = CartPage(page)
@@ -138,18 +144,21 @@ def test_complete_purchase_flow_as_registered_user(page: Page, registered_user_c
     with allure.step("Search for product"):
         # Step 2: Search for product
         home_page.header.search_product_with_button(registered_user_checkout_data["product_search"])
-        page.wait_for_load_state("networkidle")
+        base_page.wait_for_load_state()
     
     with allure.step("Select first product from results and add it to the cart"):
         # Step 3: Add product to cart
         first_product = page.locator("a.prdocutname, a.productname").first
         assert first_product.count() > 0, f"❌ Product '{registered_user_checkout_data['product_search']}' not found in search results"
         first_product.click()
-        page.wait_for_load_state("domcontentloaded")
+
+        base_page.wait_for_load_state()
+
         product_page.assert_on_product_page()
-        product_page.add_to_cart()
+        product_page.add_to_cart_with_quantity(20)
         print(f"{registered_user_checkout_data["product_search"]} was added successfully")
-        page.wait_for_load_state("networkidle")
+
+        base_page.wait_for_load_state()
     
     with allure.step("Verify the product got added and the cart is not empty"):
         # Step 4: Assert cart product
@@ -202,6 +211,7 @@ def test_cart_management_multiple_products_flow(page: Page, multiple_products_da
     8. Complete purchase as guest
     """
     # Initialize page objects
+    base_page = BasePage(page)
     home_page = HomePage(page)
     product_page = ProductPage(page)
     cart_page = CartPage(page)
@@ -210,7 +220,7 @@ def test_cart_management_multiple_products_flow(page: Page, multiple_products_da
     with allure.step("Navigate to home page and add a product"):
         # Step 1: Navigate to home and add product 1
         home_page.navigate_to_home()
-        page.wait_for_load_state("networkidle")
+        base_page.wait_for_load_state()
     
         product_1_name, product_1_found = ProductHelpers.search_and_add_product(
             home_page, product_page, page,
@@ -223,7 +233,7 @@ def test_cart_management_multiple_products_flow(page: Page, multiple_products_da
     with allure.step("Continue shopping"):
         # Step 2: Continue shopping
         home_page.navigate_to_home()
-        page.wait_for_load_state("networkidle")
+        base_page.wait_for_load_state()
     
     with allure.step("Add another product"):
         # Step 3: Add product 2 to cart
@@ -263,7 +273,7 @@ def test_cart_management_multiple_products_flow(page: Page, multiple_products_da
         # Step 6: Remove product 2 if it was found
         if product_2_found:
             cart_page.remove_product(product_2_name)
-            page.wait_for_load_state("networkidle")
+            base_page.wait_for_load_state()
             assert not cart_page.is_product_in_cart(product_2_name), \
                 "Product 2 should be removed from cart"
             print(f"✓ Product 2 '{product_2_name}' removed from cart")
@@ -276,7 +286,7 @@ def test_cart_management_multiple_products_flow(page: Page, multiple_products_da
     with allure.step("Complete purchase as guest"):
         # Step 8: Complete purchase as guest
         checkout_page.select_guest_checkout()
-        page.wait_for_load_state("networkidle")
+        base_page.wait_for_load_state()
     
         checkout_page.fill_guest_information(
             email=multiple_products_data["email"],

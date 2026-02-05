@@ -1,7 +1,9 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 from pages.base.base_page import BasePage
 from pages.components.header_component import HeaderComponent
 from pages.components.footer_component import FooterComponent
+from pages.cart_page import CartPage
+import re
 
 class ProductPage(BasePage):
     def __init__(self, page: Page):
@@ -10,6 +12,7 @@ class ProductPage(BasePage):
         # Reusable components
         self.header = HeaderComponent(page)
         self.footer = FooterComponent(page)
+        self.cart = CartPage(page)
 
     #=====================================
     # Locators - Product Info
@@ -49,22 +52,32 @@ class ProductPage(BasePage):
     #=====================================
 
     @property
-    def get_option_dropdown(self, option_name: str):
+    def option_dropdown(self):
         """option_name: 'Size', 'Color'"""
         # Options are on id with option
         # i.e. (id="option350" is color, etc.)
         return self.page.locator(f"select[name=*'option']")
+    
+    def get_option_dropdown_by_label(self, option_label: str):
+        """
+        Finds the dropdown (select) inside a form-group block that contains the label text,
+        e.g. 'Color' or 'Size'.
+        """
+        group = self.page.locator("div.form-group").filter(
+            has_text=re.compile(rf"\b{re.escape(option_label)}\b", re.IGNORECASE)
+        ).first
+        return group.locator("select").first
         
     #=====================================
     # Actions 
     #=====================================
 
     def set_quantity(self, quantity: int) -> None:
-       self.quantity_input.fill(str(quantity)) 
+       self.fill_input(self.quantity_input, str(quantity))
         
     def add_to_cart(self) -> None:
         self.add_to_cart_button.click()
-        self.page.wait_for_timeout(1000)
+        expect(self.cart.checkout_button).to_be_visible(timeout=10_000)
         
     def add_to_cart_with_quantity(self, quantity: int) -> None:
         self.set_quantity(quantity)
