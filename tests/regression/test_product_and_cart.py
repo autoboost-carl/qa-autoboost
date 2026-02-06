@@ -38,7 +38,7 @@ def test_add_product_to_cart(page: Page):
     home_page.navigate_to_home()
 
     # Search for a product
-    home_page.header.search_product_with_button("shoes")
+    home_page.header.search_product_with_button("shoe")
 
     # Click on the first product
     first_product = page.locator("a.prdocutname, a.productname").first
